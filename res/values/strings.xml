@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">ISBNreader</string>
+    <string name="action_settings">Settings</string>
+    <string name="ISBN_message">ISBN:</string>
+    <string name="button_scan">Scan book</string>
+    <string name="button_lookupISBN">Lookup ISBN</string>
+    <string name="BookTitle">Book Title</string>
+    <string name="BookAuthor">Book Author</string>
+    <string name="BookDesc">Description</string>    
+    <string name="BookImage">Book Image</string>
+    <string name="title_activity_display_book">DisplayBook</string>
+    <string name="hello_world">Hello world!</string>
+
+</resources>

@@ -1,8 +1,16 @@
 package com.example.isbnreader;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -14,13 +22,22 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class DisplayBook extends Activity {
 
+	
+	public static class Globals{
+		public static long isbn_l = 0;	
+	}
+	
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -28,7 +45,12 @@ public class DisplayBook extends Activity {
 		
 		//Get the message from the intent
 		Intent intent = getIntent();
+		String isbn = intent.getStringExtra("isbn");
 		String bookstuffs = intent.getStringExtra("json");
+		
+		//Set the global ISBN_NUMBER with the isbn string passed from the intent
+		//ISBN_NUMBER = Integer.parseInt(isbn);
+		Globals.isbn_l = Long.parseLong(isbn);
 		
 		//Attempt to create a JSON object out of the intent string, and return string array:
 		//[title, thumbnail url].
@@ -41,7 +63,7 @@ public class DisplayBook extends Activity {
 		TextView textView2 = (TextView)findViewById(R.id.BookAuthor);
 		textView2.setText(bookinfo[2]);		
 		TextView textView3 = (TextView)findViewById(R.id.BookDesc);
-		textView3.setText(bookinfo[3]);	
+		textView3.setText(isbn);	
 		
 		Object content = null;
 		try{
@@ -61,6 +83,96 @@ public class DisplayBook extends Activity {
 		setupActionBar();
 	}
 
+	public void addBook(View v){
+		TextView textView = (TextView)findViewById(R.id.BookTitle);	
+		TextView textView2 = (TextView)findViewById(R.id.BookAuthor);
+		
+		postEvents(Globals.isbn_l, textView.getText().toString(), textView2.getText().toString());
+	}
+	
+	
+	private void postEvents(Long isbn, String title, String author)
+	{
+		DefaultHttpClient client = new DefaultHttpClient();
+		
+		//FOR LOCAL DEV 
+		HttpPost post = new HttpPost("http://192.168.0.21:3000/books"); //works with and without "/create" on the end
+		//HttpPost post = new HttpPost("http://quiet-earth-7103.herokuapp.com/books");
+		post.setHeader("Content-Type","application/json");
+		post.setHeader("Accept","application/json");
+		JSONObject holder = new JSONObject();
+		JSONObject eventObj = new JSONObject();
+		
+		JSONObject params = new JSONObject();
+		
+		try {	
+			
+			params.put("isbn_10", isbn);
+			params.put("title", title);
+			params.put("author", author);
+
+			StringEntity entity = new StringEntity(params.toString());
+			entity.setContentType("application/json;charset=UTF-8");
+			post.setEntity(entity);
+			
+//			eventObj.put("isbn_10", isbn);
+//			eventObj.put("title", title);
+//			eventObj.put("author", author);
+//		
+//			holder.put("book", eventObj);
+//			holder.put("commit", "Create Book");
+//			
+//			Log.e("Event JSON", "Event JSON = "+ holder.toString());
+//			
+//			StringEntity se = new StringEntity(holder.toString());
+//			se.setContentType("application/json;charset=UTF-8");
+//			post.setEntity(se);
+//			post.setHeader("Content-Type","application/json");
+			
+			
+			} catch (UnsupportedEncodingException e) {
+			Log.e("Error",""+e);
+			e.printStackTrace();
+			} catch (JSONException js) {
+			js.printStackTrace();
+		}
+		
+		HttpResponse response = null;
+		
+		try {
+		response = client.execute(post);
+		} catch (ClientProtocolException e) {
+		e.printStackTrace();
+		Log.e("ClientProtocol",""+e);
+		} catch (IOException e) {
+		e.printStackTrace();
+		Log.e("IO",""+e);
+		}
+		
+		HttpEntity entity = response.getEntity();
+		try {
+			InputStream inputString = entity.getContent();
+		} catch (IllegalStateException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+//		if (entity != null) {
+//			try {
+//				entity.consumeContent();
+//			} catch (IOException e) {
+//					Log.e("IO E",""+e);
+//					e.printStackTrace();
+//			}
+//		}
+		
+		Toast.makeText(this, "Your post was successfully uploaded", Toast.LENGTH_LONG).show();
+	
+	}
+	
+	
 	private String[] checkJSON(String bookstuffs) {
 		// TODO Auto-generated method stub
 		String[] bookinfo;

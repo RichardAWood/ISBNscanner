@@ -6,6 +6,7 @@
     <string name="ISBN_message">ISBN:</string>
     <string name="button_scan">Scan book</string>
     <string name="button_lookupISBN">Lookup ISBN</string>
+    <string name="button_addBook">Add this book to your library</string>
     <string name="BookTitle">Book Title</string>
     <string name="BookAuthor">Book Author</string>
     <string name="BookDesc">Description</string>    

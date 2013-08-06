@@ -92,7 +92,7 @@ public class MainActivity extends Activity {
     	    } 
     	if (response != null){
     		String bookstuffs = convertStreamToString(response.getEntity().getContent());
-    		openDisplayBook(bookstuffs);
+    		openDisplayBook(isbn, bookstuffs);
           	}
 	}
 
@@ -125,8 +125,9 @@ public class MainActivity extends Activity {
 	}	
 	
     /**Called if the ISBN code returns a valid book */
-    public void openDisplayBook(String bookJSON) {
+    public void openDisplayBook(String isbn, String bookJSON) {
     	Intent intent = new Intent(this, DisplayBook.class);
+    	intent.putExtra("isbn", isbn);
     	intent.putExtra("json", bookJSON);
     	startActivity(intent);
     }	

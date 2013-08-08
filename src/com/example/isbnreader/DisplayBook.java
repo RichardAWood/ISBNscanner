@@ -35,6 +35,7 @@ public class DisplayBook extends Activity {
 	
 	public static class Globals{
 		public static long isbn_l = 0;	
+		public static String isbn_s = "";
 	}
 	
 	
@@ -51,6 +52,7 @@ public class DisplayBook extends Activity {
 		//Set the global ISBN_NUMBER with the isbn string passed from the intent
 		//ISBN_NUMBER = Integer.parseInt(isbn);
 		Globals.isbn_l = Long.parseLong(isbn);
+		Globals.isbn_s = isbn;
 		
 		//Attempt to create a JSON object out of the intent string, and return string array:
 		//[title, thumbnail url].
@@ -87,48 +89,32 @@ public class DisplayBook extends Activity {
 		TextView textView = (TextView)findViewById(R.id.BookTitle);	
 		TextView textView2 = (TextView)findViewById(R.id.BookAuthor);
 		
-		postEvents(Globals.isbn_l, textView.getText().toString(), textView2.getText().toString());
+		postEvents(Globals.isbn_s, textView.getText().toString(), textView2.getText().toString());
 	}
 	
 	
-	private void postEvents(Long isbn, String title, String author)
+	private void postEvents(String isbn, String title, String author)
 	{
 		DefaultHttpClient client = new DefaultHttpClient();
 		
 		//FOR LOCAL DEV 
-		HttpPost post = new HttpPost("http://192.168.0.21:3000/books"); //works with and without "/create" on the end
-		//HttpPost post = new HttpPost("http://quiet-earth-7103.herokuapp.com/books");
+		//HttpPost post = new HttpPost("http://192.168.0.21:3000/books"); //works with and without "/create" on the end
+		HttpPost post = new HttpPost("http://stark-mesa-1616.herokuapp.com/books");
 		post.setHeader("Content-Type","application/json");
-		post.setHeader("Accept","application/json");
-		JSONObject holder = new JSONObject();
-		JSONObject eventObj = new JSONObject();
+		//post.setHeader("Accept","application/json");
 		
 		JSONObject params = new JSONObject();
 		
 		try {	
 			
-			params.put("isbn_10", isbn);
+			params.put("isbn_13", isbn);
 			params.put("title", title);
 			params.put("author", author);
 
 			StringEntity entity = new StringEntity(params.toString());
-			entity.setContentType("application/json;charset=UTF-8");
+			//entity.setContentType("application/json;charset=UTF-8");
 			post.setEntity(entity);
-			
-//			eventObj.put("isbn_10", isbn);
-//			eventObj.put("title", title);
-//			eventObj.put("author", author);
-//		
-//			holder.put("book", eventObj);
-//			holder.put("commit", "Create Book");
-//			
-//			Log.e("Event JSON", "Event JSON = "+ holder.toString());
-//			
-//			StringEntity se = new StringEntity(holder.toString());
-//			se.setContentType("application/json;charset=UTF-8");
-//			post.setEntity(se);
-//			post.setHeader("Content-Type","application/json");
-			
+						
 			
 			} catch (UnsupportedEncodingException e) {
 			Log.e("Error",""+e);

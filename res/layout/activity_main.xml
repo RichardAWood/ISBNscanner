@@ -4,6 +4,23 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
+<RadioGroup
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+    <RadioButton android:id="@+id/radio_dev"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:checked="true"
+        android:text="@string/development"
+        android:onClick="onRadioButtonClicked"/>
+    <RadioButton android:id="@+id/radio_prod"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/production"
+        android:onClick="onRadioButtonClicked"/>
+</RadioGroup>    
+    
 <Button
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
@@ -16,5 +33,18 @@
     android:layout_height="wrap_content"
     android:ems="10"
     android:hint="@string/ISBN_message" />
+
+<Button
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="@string/button_login"
+    android:onClick="onLoginButtonClicked"/>
+
+<Button
+    android:id="@+id/displayLibrary"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="@string/button_display_library"
+    android:onClick="onDisplayLibraryButtonClicked" />
 
 </LinearLayout>

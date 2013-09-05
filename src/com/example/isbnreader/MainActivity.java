@@ -9,30 +9,32 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
+import java.util.ArrayList;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.ImageView;
+import android.widget.RadioButton;
 import android.widget.TextView;
 
 
 public class MainActivity extends Activity {
 
+	public static class Globals{
+		public static boolean dev = true;
+	}
+		
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -129,7 +131,36 @@ public class MainActivity extends Activity {
     	Intent intent = new Intent(this, DisplayBook.class);
     	intent.putExtra("isbn", isbn);
     	intent.putExtra("json", bookJSON);
+    	intent.putExtra("dev", Globals.dev);
     	startActivity(intent);
     }	
 	
+    public void onLoginButtonClicked(View view) {
+    	Intent intent = new Intent(this, LoginActivity.class);
+    	startActivity(intent);
+    }	 
+    
+    public void onDisplayLibraryButtonClicked(View view) {
+    	
+    	Intent intent = new Intent(this, ViewLibrary.class);
+    	startActivity(intent);
+    }	    
+    
+    public void onRadioButtonClicked(View view) {
+        // Is the button now checked?
+        boolean checked = ((RadioButton) view).isChecked();
+        
+        // Check which radio button was clicked
+        switch(view.getId()) {
+            case R.id.radio_dev:
+                if (checked)
+                	Globals.dev = true;
+                break;
+            case R.id.radio_prod:
+                if (checked)
+                	Globals.dev = false;
+                break;
+        }
+    }
+    
 }

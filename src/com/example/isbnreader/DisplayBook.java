@@ -36,6 +36,8 @@ public class DisplayBook extends Activity {
 	public static class Globals{
 		public static long isbn_l = 0;	
 		public static String isbn_s = "";
+		public static boolean dev = false;
+		public static String thumbnailURL = "";
 	}
 	
 	
@@ -48,9 +50,9 @@ public class DisplayBook extends Activity {
 		Intent intent = getIntent();
 		String isbn = intent.getStringExtra("isbn");
 		String bookstuffs = intent.getStringExtra("json");
+		Globals.dev = intent.getBooleanExtra("dev", false);
 		
 		//Set the global ISBN_NUMBER with the isbn string passed from the intent
-		//ISBN_NUMBER = Integer.parseInt(isbn);
 		Globals.isbn_l = Long.parseLong(isbn);
 		Globals.isbn_s = isbn;
 		
@@ -70,6 +72,7 @@ public class DisplayBook extends Activity {
 		Object content = null;
 		try{
 		  URL url = new URL(bookinfo[1]);
+		  Globals.thumbnailURL = url.toString();
 		  content = url.getContent();
 		}
 		  catch(Exception ex)
@@ -89,19 +92,23 @@ public class DisplayBook extends Activity {
 		TextView textView = (TextView)findViewById(R.id.BookTitle);	
 		TextView textView2 = (TextView)findViewById(R.id.BookAuthor);
 		
-		postEvents(Globals.isbn_s, textView.getText().toString(), textView2.getText().toString());
+		postEvents(Globals.isbn_s, textView.getText().toString(), textView2.getText().toString(), Globals.thumbnailURL);
 	}
 	
 	
-	private void postEvents(String isbn, String title, String author)
+	private void postEvents(String isbn, String title, String author, String ThumbnailURL)
 	{
 		DefaultHttpClient client = new DefaultHttpClient();
 		
 		//FOR LOCAL DEV 
-		//HttpPost post = new HttpPost("http://192.168.0.21:3000/books"); //works with and without "/create" on the end
-		HttpPost post = new HttpPost("http://stark-mesa-1616.herokuapp.com/books");
+		HttpPost post;
+		if (Globals.dev){
+			post = new HttpPost("http://192.168.0.21:3000/books");
+		}
+		else{
+			post = new HttpPost("http://stark-mesa-1616.herokuapp.com/books");
+		}
 		post.setHeader("Content-Type","application/json");
-		//post.setHeader("Accept","application/json");
 		
 		JSONObject params = new JSONObject();
 		
@@ -110,29 +117,29 @@ public class DisplayBook extends Activity {
 			params.put("isbn_13", isbn);
 			params.put("title", title);
 			params.put("author", author);
+			params.put("Thumbnail_URL", ThumbnailURL);
 
 			StringEntity entity = new StringEntity(params.toString());
-			//entity.setContentType("application/json;charset=UTF-8");
 			post.setEntity(entity);
 						
 			
 			} catch (UnsupportedEncodingException e) {
-			Log.e("Error",""+e);
-			e.printStackTrace();
+				Log.e("Error",""+e);
+				e.printStackTrace();
 			} catch (JSONException js) {
-			js.printStackTrace();
+				js.printStackTrace();
 		}
 		
 		HttpResponse response = null;
 		
 		try {
-		response = client.execute(post);
+			response = client.execute(post);
 		} catch (ClientProtocolException e) {
-		e.printStackTrace();
-		Log.e("ClientProtocol",""+e);
+			e.printStackTrace();
+			Log.e("ClientProtocol",""+e);
 		} catch (IOException e) {
-		e.printStackTrace();
-		Log.e("IO",""+e);
+			e.printStackTrace();
+			Log.e("IO",""+e);
 		}
 		
 		HttpEntity entity = response.getEntity();
